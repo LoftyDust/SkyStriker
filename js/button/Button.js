@@ -1,15 +1,12 @@
 import { ResourceLoader } from "../base/ResourceLoader";
 import { Sprite } from "../base/Sprite";
 
-const WIDTH = window.innerWidth / 3;
-const HEIGHT = WIDTH / 3;
 /**
  * 按钮类
  */
 export class Button extends Sprite {
-  constructor() {
-    let img = ResourceLoader.getInstance().getImage("button");
-    super(img, 0, 0, WIDTH, HEIGHT, true);
+  constructor(img = ResourceLoader.getInstance().getImage("button"),width = 245,height = 79) {
+    super(img, 0, 0, width, height, true);
     this.touchstartListener = null;
     this.touchmoveListener = null;
     this.touchendListener = null;
@@ -19,7 +16,7 @@ export class Button extends Sprite {
    * 添加按钮事件响应
    * @param {Function} Func 
    */
-  addTouchListener(Func) {
+  addTouchListener(object,Func) {
     this.touchstartListener = (e) => { // 开始触摸
       e.preventDefault();
       const touchX = e.touches[0].clientX;
@@ -41,8 +38,9 @@ export class Button extends Sprite {
     this.touchendListener = (e) => { // 结束触摸
       e.preventDefault();
       if (this.touched) {
-        Func();
         this.removeTouchListeners();
+        object.removeTouchListeners();
+        Func();
       }
     };
     canvas.addEventListener("touchstart", this.touchstartListener);

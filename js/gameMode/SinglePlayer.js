@@ -3,6 +3,7 @@ import { Bullets } from "../player/Bullets";
 import { Enemy } from "../enemy/Enemy";
 import { Player } from "../player/Player";
 import { Sound } from "../base/Sound";
+import { MessageBox } from "../background/MessageBox";
 
 const ctx = canvas.getContext("2d");
 let background = [];
@@ -11,7 +12,6 @@ let bulletTimer = null;
 let enemyTimer = null;
 let enemyNum = 0; // 在场enemy数量
 let enemies = []; // 敌对目标
-let isGameOver = false; // 游戏结束标识
 let player = null; // 玩家
 let timer = null;
 /**
@@ -19,6 +19,14 @@ let timer = null;
  */
 export class SinglePlayer {
   constructor() {
+    background = [];
+    bullets = [];
+    bulletTimer = null;
+    enemyTimer = null;
+    enemyNum = 0; // 在场enemy数量
+    enemies = []; // 敌对目标
+    player = null; // 玩家
+    timer = null;
     background[0] = new Background();
     background[1] = new Background();
     background[1].y = -window.innerHeight;
@@ -27,6 +35,7 @@ export class SinglePlayer {
     bulletTimer=setInterval(() => {this.shot();},800); // 初始化子弹
     player = new Player(); // 初始化玩家飞机
     player.addTouchListener();
+    this.isGameOver = false;
     this.run();
   }
   /**
@@ -62,8 +71,8 @@ export class SinglePlayer {
       if(enemies[i].y > window.innerHeight){
         index.push(i);
         if (enemies[i].isCollision) {
-          enemyNum--;
-        } 
+          this.isGameOver = true;
+        }
       }
     }
     // 从数组中删除已销毁的敌机
@@ -92,12 +101,15 @@ export class SinglePlayer {
       }
       for (let j = 0; j < enemies.length; j++) {
         if (bullets[i].collisionDetection(enemies[j])) {
-          Sound.getInstance().playBoomAudio();
+          enemies[j].blood --;
           bullets[i].visible = false;
           bullets[i].isCollision = false;
-          enemies[j].isCollision = false;
-          enemies[j].playExplosion();  
-          enemyNum --;      
+          if(enemies[j].blood == 0) {
+            Sound.getInstance().playBoomAudio();
+            enemies[j].isCollision = false;
+            enemies[j].playExplosion();  
+            enemyNum --;
+          }      
         }
       }
     }
@@ -110,10 +122,11 @@ export class SinglePlayer {
    * 帧动画
    */
   run() {
-    if (isGameOver) {
+    if (this.isGameOver) {
       cancelAnimationFrame(timer);
       clearInterval(enemyTimer);
       clearInterval(bulletTimer);
+      new MessageBox().show(ctx);
       return;
     }
     ctx.clearRect(0,0,window.innerWidth,window.innerHeight);

@@ -1,20 +1,16 @@
 import { ResourceLoader } from "../base/ResourceLoader";
 import { Sprite } from "../base/Sprite";
-
 const WIDTH = 100;
 const HEIGHT = 110;
-/**
- * 玩家类
- */
-export class Player extends Sprite {
+export class Partner extends Sprite {
   constructor() {
-    let img = ResourceLoader.getInstance().getImage("player1");
+    let img = ResourceLoader.getInstance().getImage("partner1");
     let x = window.innerWidth / 2 - WIDTH / 2;
     let y = window.innerHeight - 150;
     super(img, x, y, WIDTH, HEIGHT, true);
     this.touched = false;
     this.frameIndex = 1;
-    this.playAnimation();
+    this.playPartnerAnimation();
   }
   /**
    * 添加手指触摸响应
@@ -81,15 +77,12 @@ export class Player extends Sprite {
     this.x = dx;
     this.y = dy;
   }
-  /**
-   * 播放玩家动画
-   */
-  playAnimation() {
+  playPartnerAnimation() {
     if (this.frameIndex > 8)  {
       this.frameIndex = 1;
     }
-    this.img = ResourceLoader.getInstance().getImage(`player${this.frameIndex}`);
+    this.img = ResourceLoader.getInstance().getImage(`partner${this.frameIndex}`);
     this.frameIndex++;
-    setTimeout(()=>{this.playAnimation()},1000/6);
+    setTimeout(()=>{this.playPartnerAnimation()},1000/6);
   }
 }
